@@ -18,15 +18,17 @@ public final class R {
         public static final int colorPrimaryDark=0x7f060002;
         public static final int colorPrimaryLight=0x7f060001;
         public static final int colorPrimaryText=0x7f060003;
+        public static final int pgreen=0x7f060005;
+        public static final int pred=0x7f060004;
     }
     public static final class drawable {
         public static final int ic_check_circle=0x7f020000;
         public static final int ic_error=0x7f020001;
     }
     public static final class id {
-        public static final int main_image=0x7f090001;
-        public static final int main_launch=0x7f090002;
-        public static final int main_title=0x7f090000;
+        public static final int main_image=0x7f090002;
+        public static final int main_launch=0x7f090000;
+        public static final int main_title=0x7f090001;
     }
     public static final class layout {
         public static final int main=0x7f040000;

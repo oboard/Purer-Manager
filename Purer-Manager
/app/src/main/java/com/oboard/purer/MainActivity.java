@@ -8,31 +8,48 @@ import android.view.View;
 import android.animation.ValueAnimator;
 import android.widget.Switch;
 import android.animation.ArgbEvaluator;
+import android.widget.ImageView;
+import android.widget.CompoundButton;
+import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
     ArgbEvaluator ae = new ArgbEvaluator();
     Switch main_launch;
+    ImageView main_image;
+    TextView main_title;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getActionBar().setElevation(0);
         setContentView(R.layout.main);
-
+        
+        main_title = (TextView)findViewById(R.id.main_title);
+        main_image = (ImageView)findViewById(R.id.main_image);
         main_launch = (Switch)findViewById(R.id.main_launch);
-        main_launch.setOnClickListener(new OnClickListener() {
-           public void onClick(View v) {
-               ValueAnimator mAni = ValueAnimator.ofFloat(0, 1);
-               mAni.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                       @Override
-                       public void onAnimationUpdate(ValueAnimator animation) {
-                           float av = animation.getAnimatedValue();
-                           
-                       }
-                   });
-               mAni.setInterpolator(new SpringInterpolator());
-               mAni.setDuration(300).start();
-           } 
+        main_launch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton button, boolean b) {
+                ValueAnimator mAni;
+                if (b) {
+                    mAni = ValueAnimator.ofFloat(0, 1);
+                    main_title.setText("Purer 框架已启动");
+                    main_image.setImageResource(R.drawable.ic_check_circle);
+                } else {
+                    mAni = ValueAnimator.ofFloat(1, 0);
+                    main_title.setText("Purer 框架未启动");
+                    main_image.setImageResource(R.drawable.ic_error);
+                }
+                mAni.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                        @Override
+                        public void onAnimationUpdate(ValueAnimator animation) {
+                            float av = animation.getAnimatedValue();
+                            main_title.setTextColor(ae.evaluate(av, getColor(R.color.pred), getColor(R.color.pgreen)));
+                            main_image.setBackgroundColor(main_title.getCurrentTextColor());
+                        }
+                    });
+                mAni.setDuration(300).start();
+            }
         });
     }
 }
