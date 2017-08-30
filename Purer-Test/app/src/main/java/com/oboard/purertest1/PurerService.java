@@ -1,51 +1,62 @@
 package com.oboard.purertest1;
 
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.Intent;
-import android.content.IntentFilter;
 
-public class PurerService extends BroadcastReceiver {
-	
-	public static Context context;
-	public static String SACTION = "com.oboard.purer.api";
-	public static String ACTION = "";
-	
+public class PurerService {
+
+	public static Context mContext;
+	public static boolean mState = false;
+
+	public static SharedPreferences mSharedPreferences;
+
 	public static void init(Context c) {
-		context = c;
-		ACTION = c.getPackageName() + ".api";
+		mContext = c;
 		
-		IntentFilter intentFilter = new IntentFilter();
-		intentFilter.addAction(PurerService.ACTION);
-		c.registerReceiver(new PurerService(), intentFilter);
-				
-		Intent in = new Intent(SACTION);
-		in.putExtra("id", ACTION);
-        in.putExtra("command", "state");
-        c.sendBroadcast(in);
+		Context cc = null;
+        try {  
+            cc = c.createPackageContext("com.oboard.purer", Context.CONTEXT_IGNORE_SECURITY);
+			
+		} catch (PackageManager.NameNotFoundException e) {
+			
+		}
+		if (cc != null) {
+			mSharedPreferences = cc.getSharedPreferences("com.oboard.purer", Context.MODE_WORLD_READABLE);  
+			mState = mSharedPreferences.getBoolean("s", false);
+		} 
 	}
 
-	@Override
-    public void onReceive(Context context, Intent intent) {
-        String data = intent.getExtras().getString("command");
-
-		switch (data) {
-            case "state":
-                //返回状态
-				mOnStateListener.onState(intent.getExtras().getBoolean("back"));
-                break;
-        }
-        //abortBroadcast();//接收到广播后中断广播
-    }
-
-	public static OnStateListener mOnStateListener;
-
-	interface OnStateListener {
-        public void onState(boolean on);
-    }
-
-	public static void setOnStateListener(OnStateListener onStateListener) {
-        mOnStateListener = onStateListener;
-    }
+	public static boolean getState() {
+		return mState;
+	}
+	
+	public static void shell(String command) {
+		run("shell", command);
+	} public static void notification(boolean show) {
+		run("notification", show);
+	} public static void key(int keycode) {
+		run("key", keycode);
+	}
+	
+	private static void run(String command, boolean value) {
+		Intent i = new Intent("com.oboard.purer.api");
+		i.addCategory(i.CATEGORY_DEFAULT);
+		i.putExtra("command", command);
+		i.putExtra("value", value);
+		mContext.startActivity(i);
+	} private static void run(String command, String value) {
+		Intent i = new Intent("com.oboard.purer.api");
+		i.addCategory(i.CATEGORY_DEFAULT);
+		i.putExtra("command", command);
+		i.putExtra("value", value);
+		mContext.startActivity(i);
+	} private static void run(String command, int value) {
+		Intent i = new Intent("com.oboard.purer.api");
+		i.addCategory(i.CATEGORY_DEFAULT);
+		i.putExtra("command", command);
+		i.putExtra("value", value);
+		mContext.startActivity(i);
+	}
 }

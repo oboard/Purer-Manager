@@ -5,26 +5,32 @@ import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import android.content.pm.ApplicationInfo;
-import android.graphics.drawable.Drawable;
-import android.widget.ListView;
-import android.content.pm.PackageInfo;
 
 public class MainActivity extends Activity {
 
@@ -82,8 +88,9 @@ public class MainActivity extends Activity {
                     mAni.setDuration(300).start();
                 }
             });
+            
     }
-
+    
     //添加一个得到数据的方法，方便使用
     private List<HashMap<String, Object>> getDate() {
         List<HashMap<String, Object>> data = new ArrayList<HashMap<String,Object>>();
@@ -97,7 +104,7 @@ public class MainActivity extends Activity {
                 String pu = packageManager.getApplicationInfo(app.get(i).packageName, PackageManager.GET_META_DATA).metaData.getString("purermodule", "");
                 if (pu != null) {
                     if (pu.equals("on")) {
-                        HashMap<String, Object> map = new HashMap<String, Object>();  
+                        HashMap<String, Object> map = new HashMap<String, Object>();
                         map.put("pack", app.get(i).packageName);
                         map.put("title", app.get(i).applicationInfo.loadLabel(packageManager));
                         map.put("info", packageManager.getApplicationInfo(app.get(i).packageName, PackageManager.GET_META_DATA).metaData.getString("purerdescription"));

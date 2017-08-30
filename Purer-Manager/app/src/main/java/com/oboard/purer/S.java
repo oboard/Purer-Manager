@@ -12,7 +12,7 @@ public class S {
     static SharedPreferences s;
 
     public static void init(Context context, String name) {
-        s = context.getSharedPreferences(name, 0);
+        s = context.getSharedPreferences(name, Context.MODE_WORLD_READABLE);// + Context.MODE_WORLD_WRITEABLE);
         e = s.edit();
     }
 

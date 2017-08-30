@@ -10,7 +10,7 @@
 		android:targetSdkVersion="22"/>
 
 	<uses-permission
-		android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+		android:name="android.permission.EXPAND_STATUS_BAR"/>
 
 	<application
 		android:allowBackup="true"
@@ -34,35 +34,21 @@
 
 		</activity>
 
-		<receiver
-			android:name=".MainReceiver"
-			android:enabled="true"
-			android:exported="true">
-
-			<intent-filter
-				android:priority="1000">
-
-				<action
-					android:name="com.oboard.purer.api"/>
-
-			</intent-filter>
-
-		</receiver>
-
-		<receiver
-			android:name="BootBroadcastReceiver">
+		<activity
+			android:name=".PurerService"
+			android:theme="@android:style/Theme.NoDisplay">
 
 			<intent-filter>
 
 				<action
-					android:name="android.intent.action.BOOT_COMPLETED"/>
+					android:name="com.oboard.purer.api"/>
 
 				<category
-					android:name="android.intent.category.LAUNCHER"/>
+					android:name="android.intent.category.DEFAULT"/>
 
 			</intent-filter>
 
-		</receiver>
+		</activity>
 
 		<meta-data
 			android:name="purermodule"
