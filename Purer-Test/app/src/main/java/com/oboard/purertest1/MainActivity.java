@@ -29,7 +29,7 @@ public class MainActivity extends Activity {
 				PurerService.notification(true);
 				break;
 			case "1":
-				PurerService.key(KeyEvent.KEYCODE_APP_SWITCH);
+				PurerService.kill(getPackageName());
 				break;
 		}
 	}

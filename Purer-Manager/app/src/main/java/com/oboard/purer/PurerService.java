@@ -1,16 +1,19 @@
 package com.oboard.purer;
+
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.ComponentName;
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.wifi.WifiManager;
+import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.Bundle;
-import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
+import java.io.OutputStream;
 import java.lang.reflect.Method;
-import android.view.KeyEvent;
+import java.util.List;
 
 public class PurerService extends Activity {
 
@@ -18,27 +21,38 @@ public class PurerService extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         S.init(this, "com.oboard.purer");
-        if (!S.get("s", false)) finish();
-        switch (getIntent().getExtras().getString("command", "")) {
+
+        if (!S.get("s", false)) {
+            finish();
+            return;
+        }
+
+        Bundle e = getIntent().getExtras();
+        switch (e.getString("command", "")) {
             case "shell":
-                exec(getIntent().getExtras().getString("value", ""));
+                exec(e.getString("value", ""));
+                break;
+            case "open":
+                openApp(this, e.getString("value"));
+                break;
+            case "kill":
+                ActivityManager activityMgr = (ActivityManager) this.getSystemService(ACTIVITY_SERVICE);
+                activityMgr.killBackgroundProcesses(e.getString("value"));
                 break;
             case "notification":
-                if (getIntent().getExtras().getBoolean("value", false))
+                if (e.getBoolean("value", false))
                     expandNotification(this);
                 else
                     collapsingNotification(this);
                 break;
+            case "su":
+                exec("su");
+                break;
+            case "tap":
+                exec("input tap " + e.getInt("value", 0));
+                break;
             case "key":
-                try {
-                    if (getIntent().getExtras().getInt("value", -1) == -1) {
-                        String keyCommand = "input keyevent " + getIntent().getExtras().getInt("value", 0);
-                        Process proc = Runtime.getRuntime().exec(keyCommand);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();  
-                }
-                
+                exec("input keyevent " + e.getInt("value", 0));
                 break;
         }
         finish();
@@ -63,6 +77,36 @@ public class PurerService extends Activity {
             collapse.invoke(service);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public static void openApp(Context c, String packageName) {
+        try {
+            PackageManager pm = c.getPackageManager();
+            PackageInfo pi = pm.getPackageInfo(packageName, 0);
+
+            Intent resolveIntent = new Intent(Intent.ACTION_MAIN, null);
+            resolveIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+            resolveIntent.setPackage(pi.packageName);
+
+            List<ResolveInfo> apps = pm.queryIntentActivities(resolveIntent, 0);
+
+            ResolveInfo ri = apps.iterator().next();
+            if (ri != null) {
+                //String packageName = ri.activityInfo.packageName;
+                String className = ri.activityInfo.name;
+
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.addCategory(Intent.CATEGORY_LAUNCHER);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);            
+
+                ComponentName cn = new ComponentName(packageName, className);
+
+                intent.setComponent(cn);
+                c.startActivity(intent);
+            }
+        } catch (Exception e) {
+
         }
     }
 
@@ -93,33 +137,47 @@ public class PurerService extends Activity {
             expand.setAccessible(true);
             expand.invoke(service);
         } catch (Exception e) {
-
             e.printStackTrace();
-
         }
 
     }
 
+    private void exec(String cmd) {  
+        try {  
+            // 申请获取root权限，这一步很重要，不然会没有作用  
+            Process process = Runtime.getRuntime().exec("su");  
+            // 获取输出流  
+            OutputStream outputStream = process.getOutputStream();  
+            DataOutputStream dataOutputStream = new DataOutputStream(outputStream);  
+            dataOutputStream.writeBytes(cmd);  
+            dataOutputStream.flush();  
+            dataOutputStream.close();  
+            outputStream.close();  
+        } catch (Throwable t) {  
+            t.printStackTrace();  
+        }  
+    }  
 
-    private String exec(String command) {
-        try {
-            Process process = Runtime.getRuntime().exec(command);
-            BufferedReader reader = new BufferedReader(
-                new InputStreamReader(process.getInputStream()));
-            int read;
-            char[] buffer = new char[4096];
-            StringBuffer output = new StringBuffer();
-            while ((read = reader.read(buffer)) > 0) {
-                output.append(buffer, 0, read);
-            }
-            reader.close();
-            process.waitFor();
-            return output.toString();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    /*
+     private String exec(String command) {
+     try {
+     Process process = Runtime.getRuntime().exec(command);
+     BufferedReader reader = new BufferedReader(
+     new InputStreamReader(process.getInputStream()));
+     int read;
+     char[] buffer = new char[4096];
+     StringBuffer output = new StringBuffer();
+     while ((read = reader.read(buffer)) > 0) {
+     output.append(buffer, 0, read);
+     }
+     reader.close();
+     process.waitFor();
+     return output.toString();
+     } catch (IOException e) {
+     throw new RuntimeException(e);
+     } catch (InterruptedException e) {
+     throw new RuntimeException(e);
+     }
+     }*/
 
 }

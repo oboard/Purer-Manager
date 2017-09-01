@@ -4,33 +4,33 @@ import android.animation.ArgbEvaluator;
 import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.graphics.BitmapFactory;
+import android.content.pm.ResolveInfo;
+import android.database.Cursor;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.util.Log;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import android.view.Menu;
 
 public class MainActivity extends Activity {
 
@@ -52,6 +52,12 @@ public class MainActivity extends Activity {
         main_image = (ImageView)findViewById(R.id.main_image);
         main_list = (ListView)findViewById(R.id.main_list);
         main_list.setAdapter(new MyAdapter(this, getDate()));
+        main_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                public void onItemClick(AdapterView<?> av, View v, int p, long l) {
+                    String mm = getDate().get(p).get("pack").toString();
+                    if (!mm.equals(getPackageName())) PurerService.openApp(MainActivity.this, mm);
+                }
+            });
         main_launch = (Switch)findViewById(R.id.main_launch);
         main_launch.setChecked(S.get("s", false));
         if (S.get("s", false)) {
@@ -88,9 +94,22 @@ public class MainActivity extends Activity {
                     mAni.setDuration(300).start();
                 }
             });
-            
     }
     
+    
+    
+    @Override public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(Menu.FIRST, 0, 0, "设置").setIcon(R.drawable.ic_settings).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        return true;
+    }
+    
+    @Override public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getTitle().equals("设置")) {
+            startActivity(new Intent(this, SettingsDiglog.class));
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     //添加一个得到数据的方法，方便使用
     private List<HashMap<String, Object>> getDate() {
         List<HashMap<String, Object>> data = new ArrayList<HashMap<String,Object>>();
@@ -169,8 +188,7 @@ public class MainActivity extends Activity {
             holder.img.setImageDrawable((Drawable)data.get(position).get("img"));
             holder.title.setText((String)data.get(position).get("title"));
             holder.info.setText((String)data.get(position).get("info"));
-            
-            
+
             return convertView;
         }
 

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:orientation="vertical"
+	android:paddingTop="10dp">
+
+	<TextView
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:text="更换图标"
+		android:layout_marginLeft="10dp"
+		android:layout_marginBottom="10dp"/>
+
+	<LinearLayout
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal">
+
+		<ImageButton
+			style="?android:attr/buttonBarButtonStyle"
+			android:layout_height="150dp"
+			android:layout_width="match_parent"
+			android:src="@drawable/i"
+			android:layout_weight="1"
+			android:onClick="onChangeIcon"
+			android:tag="com.oboard.purer.MainActivity"
+			android:scaleType="centerInside"/>
+
+		<ImageButton
+			style="?android:attr/buttonBarButtonStyle"
+			android:layout_height="150dp"
+			android:layout_width="match_parent"
+			android:src="@drawable/i2"
+			android:layout_weight="1"
+			android:onClick="onChangeIcon"
+			android:tag="com.oboard.purer.ic2"
+			android:scaleType="centerInside"/>
+
+	</LinearLayout>
+
+	<Button
+		style="?android:attr/buttonBarButtonStyle"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:text="关闭"
+		android:onClick="c"
+		android:layout_gravity="right"
+		android:layout_marginTop="10dp"/>
+
+</LinearLayout>
+
