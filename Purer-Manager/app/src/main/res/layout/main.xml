@@ -10,7 +10,7 @@
 	<RelativeLayout
 		android:layout_height="wrap_content"
 		android:layout_width="match_parent"
-		android:elevation="3dp"
+		android:elevation="4dp"
 		android:background="@color/colorPrimary">
 
 		<Switch
@@ -23,7 +23,7 @@
 			android:textColor="@color/colorPrimaryText"
 			android:background="?android:attr/selectableItemBackground"
 			android:textAppearance="?android:attr/textAppearanceMedium"
-			android:padding="10dp"/>
+			android:padding="15dp"/>
 
 	</RelativeLayout>
 

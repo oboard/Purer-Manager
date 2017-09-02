@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     
     <uses-permission android:name="android.permission.EXPAND_STATUS_BAR"/>
-        
-    <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" /> 
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
         
     <application
         android:allowBackup="true"
@@ -32,14 +32,10 @@
             </intent-filter>
         </activity-alias>
      
-        <activity
+        <service
             android:name=".PurerService"
-            android:theme="@android:style/Theme.NoDisplay">
-            <intent-filter>  
-                <action android:name="com.oboard.purer.api" />  
-                <category android:name="android.intent.category.DEFAULT" />  
-            </intent-filter>
-        </activity>
+            android:enabled="true"  
+            android:exported="true"/>
         
         <activity
             android:name=".SettingsDiglog"

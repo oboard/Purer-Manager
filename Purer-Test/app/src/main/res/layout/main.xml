@@ -23,7 +23,14 @@
 		android:layout_width="wrap_content"
 		android:onClick="go"
 		android:tag="1"
-		android:text="自杀"/>
+		android:text="吐司"/>
+	
+	<Button
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:onClick="go"
+		android:tag="2"
+		android:text="快餐"/>
 	
 </LinearLayout>
 

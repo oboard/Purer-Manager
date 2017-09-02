@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.content.IntentFilter;
 import android.view.View;
 import android.view.KeyEvent;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
     @Override
@@ -29,8 +30,12 @@ public class MainActivity extends Activity {
 				PurerService.notification(true);
 				break;
 			case "1":
-				PurerService.kill(getPackageName());
+				PurerService.toast("hello");
 				break;
+			case "2":
+				PurerService.snack("hello");
+				break;	
+				
 		}
 	}
 }

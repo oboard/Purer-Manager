@@ -1,7 +1,7 @@
 package com.oboard.purer;
 
-import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -9,53 +9,70 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Bundle;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import android.os.Environment;
+import android.os.IBinder;
+import android.os.StatFs;
+import android.telephony.TelephonyManager;
+import android.text.format.Formatter;
+import java.io.File;
 import java.lang.reflect.Method;
 import java.util.List;
+import android.widget.Toast;
+import android.os.AsyncTask;
+import android.view.WindowManager;
 
-public class PurerService extends Activity {
+public class PurerService extends Service {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onCreate() {
+        super.onCreate();
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
         S.init(this, "com.oboard.purer");
 
-        if (!S.get("s", false)) {
-            finish();
-            return;
-        }
+        //ActivityManager am = (ActivityManager) this.getSystemService(ACTIVITY_SERVICE);
 
-        Bundle e = getIntent().getExtras();
-        switch (e.getString("command", "")) {
+        if (!S.get("s", false)) {
+            stopSelf();
+            return super.onStartCommand(intent, flags, startId);
+        }
+        
+        Bundle e = intent.getExtras();
+        switch (e.getString("c", "")) {
             case "shell":
-                exec(e.getString("value", ""));
+                exec(e.getString("v", ""));
                 break;
             case "open":
-                openApp(this, e.getString("value"));
-                break;
-            case "kill":
-                ActivityManager activityMgr = (ActivityManager) this.getSystemService(ACTIVITY_SERVICE);
-                activityMgr.killBackgroundProcesses(e.getString("value"));
+                openApp(this, e.getString("v"));
                 break;
             case "notification":
-                if (e.getBoolean("value", false))
+                if (e.getBoolean("v", false))
                     expandNotification(this);
                 else
                     collapsingNotification(this);
                 break;
-            case "su":
-                exec("su");
+            case "toast":
+                new ToastMessageTask().execute(e.getString("v"));
                 break;
-            case "tap":
-                exec("input tap " + e.getInt("value", 0));
-                break;
-            case "key":
-                exec("input keyevent " + e.getInt("value", 0));
+            case "snack":
+                new SnackMessageTask().execute(e.getString("v"));
                 break;
         }
-        finish();
+
+        stopSelf();
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 
     public static void collapsingNotification(Context context) {
@@ -145,14 +162,14 @@ public class PurerService extends Activity {
     private void exec(String cmd) {  
         try {  
             // 申请获取root权限，这一步很重要，不然会没有作用  
-            Process process = Runtime.getRuntime().exec("su");  
+            Process process = Runtime.getRuntime().exec(cmd);  
             // 获取输出流  
-            OutputStream outputStream = process.getOutputStream();  
-            DataOutputStream dataOutputStream = new DataOutputStream(outputStream);  
-            dataOutputStream.writeBytes(cmd);  
-            dataOutputStream.flush();  
-            dataOutputStream.close();  
-            outputStream.close();  
+            /* OutputStream outputStream = process.getOutputStream();  
+             DataOutputStream dataOutputStream = new DataOutputStream(outputStream);  
+             dataOutputStream.writeBytes(cmd + "\n");  
+             dataOutputStream.flush();  
+             dataOutputStream.close();  
+             outputStream.close();  */
         } catch (Throwable t) {  
             t.printStackTrace();  
         }  
@@ -180,4 +197,43 @@ public class PurerService extends Activity {
      }
      }*/
 
+    private class ToastMessageTask extends AsyncTask<String, String, String> {
+        String toastMessage;
+
+        @Override
+        protected String doInBackground(String... params) {
+            toastMessage = params[0];
+            return toastMessage;
+        }
+
+        protected void OnProgressUpdate(String... values) { 
+            super.onProgressUpdate(values);
+        }
+        // This is executed in the context of the main GUI thread
+        protected void onPostExecute(String result){
+            Toast toast = Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT);
+            toast.show();
+        }
+    }
+    
+    private class SnackMessageTask extends AsyncTask<String, String, String> {
+        String toastMessage;
+
+        @Override
+        protected String doInBackground(String... params) {
+            toastMessage = params[0];
+            return toastMessage;
+        }
+
+        protected void OnProgressUpdate(String... values) { 
+            super.onProgressUpdate(values);
+        }
+        // This is executed in the context of the main GUI thread
+        protected void onPostExecute(String result){
+            SnackBar toast = SnackBar.makeText(getApplicationContext(), result, SnackBar.LENGTH_SHORT);
+            toast.show();
+        }
+    }
+     
 }
+   
