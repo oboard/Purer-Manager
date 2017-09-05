@@ -1,6 +1,7 @@
 # Purer-Manager
 什么是Purer？能吃吗？很抱歉不能吃😂 
-Purer 框架的功能是让APP做到纯净，支持的APP 需要调用Purer API，提供的API只需要我来维护，关闭Purer 框架的激活就相当于纯净了😋
+Purer 框架的功能是让APP做到纯净，支持的APP 需要调用Purer API，提供的API只需要我来维护
+Purer Manager内置权限管理，指定程序可以调用框架的哪些API
 ##
 ###首先把Purer 服务添加到项目中，文件链接：
 https://github.com/oboard/Purer-Manager/blob/master/Purer-Test/app/src/main/java/com/oboard/purertest1/PurerService.java
@@ -38,12 +39,27 @@ https://github.com/oboard/Purer-Manager/blob/master/Purer-Test/app/src/main/java
 ```
 教程就到这里，下列是各个API 的描述
 
+
+###API 2
+
+died()//程序自杀
+
+notification(String ticker, String title, String text, int number, Icon icon)//通知
+
+notificationpage(Boolean show)//关闭和下拉通知栏
+
+open(String package)//启动应用程序
+
+toast(String message)//全局吐司
+
+snack(String message)//全局快餐
+
 ###API 1
 
-notification(Boolean)//关闭和下拉通知栏
+notification(Boolean show)//关闭和下拉通知栏
 
-open(String)//启动应用程序
+open(String package)//启动应用程序
 
-toast(String)//全局吐司
+toast(String message)//全局吐司
 
-snack(String)//全局快餐
+snack(String message)//全局快餐
