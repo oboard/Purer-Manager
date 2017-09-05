@@ -35,10 +35,12 @@ import android.view.Menu;
 public class MainActivity extends Activity {
 
     ArgbEvaluator ae = new ArgbEvaluator();
+    
     Switch main_launch;
     ImageView main_image;
     TextView main_title;
     ListView main_list;
+    List<HashMap<String, Object>> mData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,11 +53,17 @@ public class MainActivity extends Activity {
         main_title = (TextView)findViewById(R.id.main_title);
         main_image = (ImageView)findViewById(R.id.main_image);
         main_list = (ListView)findViewById(R.id.main_list);
-        main_list.setAdapter(new MyAdapter(this, getDate()));
+        mData = getData();
+        main_list.setAdapter(new MyAdapter(this, mData));
         main_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 public void onItemClick(AdapterView<?> av, View v, int p, long l) {
-                    String mm = getDate().get(p).get("pack").toString();
-                    if (!mm.equals(getPackageName())) PurerService.openApp(MainActivity.this, mm);
+                    String mm = mData.get(p).get("pack").toString();
+                    if (!mm.equals(getPackageName())) {
+                        Intent i = new Intent(MainActivity.this, AppActivity.class);
+                        i.putExtra("n", mData.get(p).get("title").toString());
+                        i.putExtra("i", mm);
+                        startActivity(i);
+                    }
                 }
             });
         main_launch = (Switch)findViewById(R.id.main_launch);
@@ -96,22 +104,18 @@ public class MainActivity extends Activity {
             });
     }
     
-    
-    
     @Override public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(Menu.FIRST, 0, 0, "设置").setIcon(R.drawable.ic_settings).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         return true;
     }
     
     @Override public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getTitle().equals("设置")) {
-            startActivity(new Intent(this, SettingsDiglog.class));
-        }
+        if(item.getTitle().equals("设置")) startActivity(new Intent(this, SettingsDiglog.class));
         return super.onOptionsItemSelected(item);
     }
 
     //添加一个得到数据的方法，方便使用
-    private List<HashMap<String, Object>> getDate() {
+    private List<HashMap<String, Object>> getData() {
         List<HashMap<String, Object>> data = new ArrayList<HashMap<String,Object>>();
         //为动态数组添加数据 
         final PackageManager packageManager = getApplication().getPackageManager();

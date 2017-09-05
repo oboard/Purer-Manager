@@ -1,6 +1,7 @@
 package com.oboard.purer;
 
-import android.app.ActivityManager;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
@@ -8,18 +9,16 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.IBinder;
-import android.os.StatFs;
-import android.telephony.TelephonyManager;
-import android.text.format.Formatter;
-import java.io.File;
+import android.widget.Toast;
 import java.lang.reflect.Method;
 import java.util.List;
-import android.widget.Toast;
-import android.os.AsyncTask;
-import android.view.WindowManager;
+import android.graphics.drawable.Icon;
+import android.graphics.Bitmap;
+import android.content.pm.ApplicationInfo;
+import java.net.IDN;
 
 public class PurerService extends Service {
 
@@ -38,25 +37,26 @@ public class PurerService extends Service {
             stopSelf();
             return super.onStartCommand(intent, flags, startId);
         }
-        
         Bundle e = intent.getExtras();
+        String a = e.getString("i") + ".p.";
         switch (e.getString("c", "")) {
-            case "shell":
-                exec(e.getString("v", ""));
-                break;
             case "open":
+                if (!S.get(a + "open", true)) break;
                 openApp(this, e.getString("v"));
                 break;
-            case "notification":
+            case "notificationpage":
+                if (!S.get(a + "notificationpage", true)) break;
                 if (e.getBoolean("v", false))
                     expandNotification(this);
                 else
                     collapsingNotification(this);
                 break;
             case "toast":
+                if (!S.get(a + "toast", true)) break;
                 new ToastMessageTask().execute(e.getString("v"));
                 break;
             case "snack":
+                if (!S.get(a + "snack", true)) break;
                 new SnackMessageTask().execute(e.getString("v"));
                 break;
         }
@@ -158,44 +158,6 @@ public class PurerService extends Service {
         }
 
     }
-
-    private void exec(String cmd) {  
-        try {  
-            // 申请获取root权限，这一步很重要，不然会没有作用  
-            Process process = Runtime.getRuntime().exec(cmd);  
-            // 获取输出流  
-            /* OutputStream outputStream = process.getOutputStream();  
-             DataOutputStream dataOutputStream = new DataOutputStream(outputStream);  
-             dataOutputStream.writeBytes(cmd + "\n");  
-             dataOutputStream.flush();  
-             dataOutputStream.close();  
-             outputStream.close();  */
-        } catch (Throwable t) {  
-            t.printStackTrace();  
-        }  
-    }  
-
-    /*
-     private String exec(String command) {
-     try {
-     Process process = Runtime.getRuntime().exec(command);
-     BufferedReader reader = new BufferedReader(
-     new InputStreamReader(process.getInputStream()));
-     int read;
-     char[] buffer = new char[4096];
-     StringBuffer output = new StringBuffer();
-     while ((read = reader.read(buffer)) > 0) {
-     output.append(buffer, 0, read);
-     }
-     reader.close();
-     process.waitFor();
-     return output.toString();
-     } catch (IOException e) {
-     throw new RuntimeException(e);
-     } catch (InterruptedException e) {
-     throw new RuntimeException(e);
-     }
-     }*/
 
     private class ToastMessageTask extends AsyncTask<String, String, String> {
         String toastMessage;

@@ -1,11 +1,16 @@
 package com.oboard.purertest1;
 
-/*Purer API 1*/
+/*Purer API 2*/
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.Intent;
-import android.content.ComponentName;
+import android.graphics.drawable.Icon;
+import android.os.Bundle;
+import android.os.Process;
 
 public class PurerService {
 
@@ -35,12 +40,9 @@ public class PurerService {
 		return mData.getBoolean("s", false);
 	}
 	
-	//Android Shell
-	public static void shell(String command) {
-		run("shell", command);
-	}//展开／关闭通知栏
-	public static void notification(boolean show) {
-		run("notification", show);
+	//展开／关闭通知栏
+	public static void notificationpage(boolean show) {
+		run("notificationpage", show);
 	}//启动程序
 	public static void open(String packagename) {
 		run("open", packagename);
@@ -50,13 +52,29 @@ public class PurerService {
 	}//SnackBar
 	public static void snack(String message) {
 		run("snack", message);
+	}//自杀
+	public static void died() {
+		if (!mData.getBoolean(mContext.getPackageName() + ".p.died", true)) return;
+		android.os.Process.killProcess(Process.myPid());
+	}//通知
+	public static void notification(String ticker, String title, String text, int number, Icon icon) {
+        if (!mData.getBoolean(mContext.getPackageName() + ".p.notification", true)) return;
+		NotificationManager notiManager = (NotificationManager) mContext.getSystemService(mContext.NOTIFICATION_SERVICE);
+        Notification notify3 = new Notification.Builder(mContext)  
+            .setSmallIcon(icon)
+            .setTicker(title)
+            .setContentTitle(title)  
+            .setContentText(text)  
+            .setNumber(number).build();
+        notify3.flags |= Notification.FLAG_AUTO_CANCEL;
+        notiManager.notify(number, notify3);
 	}
 	
 	private static void run(String command, String value) {
 		Intent i = new Intent();
 		i.setComponent(new ComponentName("com.oboard.purer", "com.oboard.purer.PurerService"));  
 
- 		i.putExtra("id", mContext.getPackageName());
+ 		i.putExtra("i", mContext.getPackageName());
 		i.putExtra("c", command);
 		i.putExtra("v", value);
 		mContext.startService(i);
@@ -64,7 +82,7 @@ public class PurerService {
 		Intent i = new Intent();
 		i.setComponent(new ComponentName("com.oboard.purer", "com.oboard.purer.PurerService"));  
 		
-		i.putExtra("id", mContext.getPackageName());
+		i.putExtra("i", mContext.getPackageName());
 		i.putExtra("c", command);
 		i.putExtra("v", value);
 		mContext.startService(i);
@@ -72,7 +90,7 @@ public class PurerService {
 		Intent i = new Intent();
 		i.setComponent(new ComponentName("com.oboard.purer", "com.oboard.purer.PurerService"));  
 		
-		i.putExtra("id", mContext.getPackageName());
+		i.putExtra("i", mContext.getPackageName());
 		i.putExtra("c", command);
 		i.putExtra("v", value);
 		mContext.startService(i);

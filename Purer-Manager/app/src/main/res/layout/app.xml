@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:id="@+id/app_icon"
+        android:layout_marginTop="10dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:gravity="center"
+        android:padding="15dp"
+        android:id="@+id/app_text"/>
+
+    <Switch
+        android:id="@+id/app_0"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:padding="10dp"
+        android:text="控制通知页面"/>
+
+    <Switch
+        android:id="@+id/app_1"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:padding="10dp"
+        android:text="通知"/>
+
+    <Switch
+        android:id="@+id/app_5"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:padding="10dp"
+        android:text="启动程序"/>
+
+    <Switch
+        android:id="@+id/app_2"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:padding="10dp"
+        android:text="Toast"/>
+
+    <Switch
+        android:id="@+id/app_3"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:padding="10dp"
+        android:text="Snack"/>
+
+    <Switch
+        android:id="@+id/app_4"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:padding="10dp"
+        android:text="自杀"/>
+
+</LinearLayout>
+
